@@ -13,5 +13,45 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\qd">
+      <UniqueIdentifier>{0a6d7261-f262-446b-abc7-3d6c1b9535a0}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="acp.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="point.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="kdtree.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ps4-nishida.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="acp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="object.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="point.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pv.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="qd\qd_config.h">
+      <Filter>Header Files\qd</Filter>
+    </ClInclude>
+    <ClInclude Include="qd\qd_inline.h">
+      <Filter>Header Files\qd</Filter>
+    </ClInclude>
+    <ClInclude Include="kdtree.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
