@@ -5,9 +5,19 @@ int XOrder::sign ()
   return (b->getP().x - a->getP().x).sign();
 }
 
+int LineSegmentXOrder::sign ()
+{
+  return XOrder(a->p0, b) && XOrder(a->p1, b);
+}
+
 int YOrder::sign ()
 {
   return (b->getP().y - a->getP().y).sign();
+}
+
+int LineSegmentYOrder::sign ()
+{
+  return YOrder(a->p0, b) && YOrder(a->p1, b);
 }
 
 int CCW::sign ()

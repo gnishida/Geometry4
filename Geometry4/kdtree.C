@@ -9,61 +9,108 @@ void KdTreeNode::insert (LineSegment *l)
   switch (splitType) {
   case 0:
     if (XOrder(l->p0, splitAt) && XOrder(l->p1, splitAt)) {
-	  if (right)
-	    right->insert(l);
-	  else 
-	    right = new KdTreeNode(l);		
+	  insertRight(l);
 	} else if (XOrder(splitAt, l->p0) && XOrder(splitAt, l->p1)) {
-	  if (left)
-	    left->insert(l);
-	  else
-	    left = new KdTreeNode(l);
+	  insertLeft(l);
 	} else {
-      PV2 p = splitAt->getP() + PV2(0, 10);
-      PV2 intP = lineIntersection(l->p0->getP(), l->p1->getP(), splitAt->getP(), p);
-
-	  if (XOrder(l->p0, splitAt)) {
-		LineSegment *l1 = new LineSegment(l->p0, intP);
-		if (right)
-		  right->insert(l1);
-		else
-		  right = new KdTreeNode(l1);
-		LineSegment *l2 = new LineSegment(l->p1, intP);
-		if (left)
-		  left->insert(l2);
-		else
-		  left = new KdTreeNode(l2);
-	  } else {
-		LineSegment *l1 = new LineSegment(l->p0, intP);
-		if (left)
-		  left->insert(l1);
-		else
-		  left = new KdTreeNode(l1);
-		LineSegment *l2 = new LineSegment(l->p1, intP);
-		if (right)
-		  right->insert(l2);
-		else
-		  right = new KdTreeNode(l2);
-	  }
+	  LineSegment *l0, *l1;
+	  splitLineSegment(l, splitAt, splitType, l0, l1);
+      insertRight(l0);
+	  insertLeft(l1);
 	}
 	break;
   case 1:
+    if (YOrder(l->p0, splitAt) && YOrder(l->p1, splitAt)) {
+	  insertRight(l);
+	} else if (YOrder(splitAt, l->p0) && YOrder(splitAt, l->p1)) {
+	  insertLeft(l);
+	} else {
+	  LineSegment *l0, *l1;
+	  splitLineSegment(l, splitAt, splitType, l0, l1);
+      insertRight(l0);
+	  insertLeft(l1);
+	}
+    break;
+  }
+}
+
+void KdTreeNode::insertRight (LineSegment *l)
+{
+  if (right)
+    right->insert(l);
+  else 
+    right = new KdTreeNode(l, (splitType + 1) % 2);
+}
+
+void KdTreeNode::insertLeft (LineSegment *l)
+{
+  if (left)
+    left->insert(l);
+  else
+    left = new KdTreeNode(l, (splitType + 1) % 2);
+}
+
+bool KdTreeNode::intersects (LineSegment *l)
+{
+  switch (splitType) {
+  case 0:
+    if (XOrder(l->p0, splitAt) && XOrder(l->p1, splitAt)) {
+	  if (right == 0)
+		return false;
+	  else
+        return right->intersects(l);
+	} else if (XOrder(splitAt, l->p0) && XOrder(splitAt, l->p1)) {
+	  if (left == 0)
+	    return false;
+	  else
+        return left->intersects(l);
+	} else {
+	  LineSegment *l0, *l1;
+	  splitLineSegment(l, splitAt, splitType, l0, l1);
+
+	  if (left != 0)
+        if (left->intersects(l0)) return true;
+	  if (right != 0) 
+        if (right->intersects(l1)) return true;
+	  return false;
+	}
+	break;
+  case 1:
+    if (YOrder(l->p0, splitAt) && YOrder(l->p1, splitAt)) {
+	  if (right == 0)
+		return false;
+	  else
+        return right->intersects(l);
+	} else if (YOrder(splitAt, l->p0) && YOrder(splitAt, l->p1)) {
+	  if (left == 0)
+	    return false;
+	  else
+        return left->intersects(l);
+	} else {
+	  LineSegment *l0, *l1;
+	  splitLineSegment(l, splitAt, splitType, l0, l1);
+
+	  if (left != 0)
+        if (left->intersects(l0)) return true;
+	  if (right != 0) 
+        if (right->intersects(l1)) return true;
+	  return false;
+	}
     break;
   }
 }
 
 void KdTree::insert (LineSegment *l)
 {
-  if (root == 0) {
+  if (root == 0)
     root = new KdTreeNode(l);
-  }
   else
     root->insert(l);
 }
 
 bool KdTree::intersects (LineSegment *l)
 {
-  return false;
+  return root->intersects(l); 
 }
 
 Arrangement::~Arrangement ()
@@ -86,4 +133,31 @@ bool Arrangement::intersects (LineSegment *l)
 	}
 
 	return kdTree.intersects(l);
+}
+
+void splitLineSegment (LineSegment *l, Point *splitAt, int splitType, LineSegment *l0, LineSegment *l1)
+{
+  if (splitType == 0) {
+    PV2 p = splitAt->getP() + PV2(0, 10);
+    PV2 intP = lineIntersection(l->p0->getP(), l->p1->getP(), splitAt->getP(), p);
+
+    if (XOrder(l->p0, splitAt)) {
+	  l0 = new LineSegment(l->p0, new InputPoint(intP));
+	  l1 = new LineSegment(l->p1, new InputPoint(intP));
+	} else {
+	  l0 = new LineSegment(l->p1, new InputPoint(intP));
+	  l1 = new LineSegment(l->p0, new InputPoint(intP));
+	}
+  } else {
+    PV2 p = splitAt->getP() + PV2(10, 0);
+    PV2 intP = lineIntersection(l->p0->getP(), l->p1->getP(), splitAt->getP(), p);
+
+    if (YOrder(l->p0, splitAt)) {
+	  l0 = new LineSegment(l->p0, new InputPoint(intP));
+	  l1 = new LineSegment(l->p1, new InputPoint(intP));
+	} else {
+	  l0 = new LineSegment(l->p1, new InputPoint(intP));
+	  l1 = new LineSegment(l->p0, new InputPoint(intP));
+	}
+  }
 }
