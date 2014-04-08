@@ -14,6 +14,9 @@ acp.o:	acp.cc acp.h
 point.o: point.C point.h object.h pv.h acp.h
 	$(COMPILE) point.C
 
+plot.o: plot.C plot.h point.h pv.h acp.h
+	$(COMPILE) plot.C
+
 permute.o: permute.C permute.h
 	$(COMPILE) permute.C
 

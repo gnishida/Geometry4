@@ -75,7 +75,10 @@ int main(int argc, char *argv[]) {
 		{
 			for (int i = 0; i < tests.size(); ++i) {
 				if (kdTree.intersects(tests[i]) != naiveIntersects(lineSegments, *tests[i])) {
-					cout << "Incorrect result was found!!!" << endl;
+					cout << "Incorrect result was found!!! i = " << i << " n = " << n << endl;
+					pl(tests[i]);
+					cout << "Kd Tree: " << kdTree.intersects(tests[i]) << endl;
+					cout << "Naive  : " << naiveIntersects(lineSegments, *tests[i]) << endl;
 				}
 			}
 		}

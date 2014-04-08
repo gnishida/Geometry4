@@ -142,7 +142,8 @@ void KdTree::insert (LineSegment *l)
 
 bool KdTree::intersects (LineSegment *l)
 {
-  return root->intersects(l); 
+  if (root == 0) return false;
+  else return root->intersects(l); 
 }
 
 void KdTree::debug ()
