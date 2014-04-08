@@ -26,6 +26,8 @@ int main(int argc, char *argv[]) {
 		double x2 = rand() % 100;
 		double y2 = rand() % 100;
 
+		cout << x1 << ", " << y1 << ", " << x2 << ", " << y2 << endl;
+
 		LineSegment *l = new LineSegment(new InputPoint(x1, y1), new InputPoint(x2, y2));
 		arr.addLineSegment(l);
 	}
@@ -36,6 +38,8 @@ int main(int argc, char *argv[]) {
 		double y1 = rand() % 100;
 		double x2 = rand() % 100;
 		double y2 = rand() % 100;
+
+		cout << "Test Line: " << x1 << ", " << y1 << ", " << x2 << ", " << y2 << endl;
 
 		LineSegment *l = new LineSegment(new InputPoint(x1, y1), new InputPoint(x2, y2));
 		if (arr.intersects(l)) {
