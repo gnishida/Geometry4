@@ -61,7 +61,7 @@ void KdTreeNode::insertLeft (LineSegment *l)
 
 bool KdTreeNode::intersects (LineSegment *l)
 {
-  if (lineSegment->intersects(l)) return true;
+  if (lineSegment != 0 && lineSegment->intersects(l)) return true;
 
   switch (splitType) {
   case 0:
@@ -151,33 +151,20 @@ void KdTree::debug ()
     root->debug(0);
 }
 
-Arrangement::~Arrangement ()
+bool intersects (LineSegments &lineSegments, LineSegment &l)
 {
-  for (LineSegments::iterator l = lineSegments.begin(); l != lineSegments.end(); ++l)
-    delete *l;
-}
+  KdTree kdTree;
 
-void Arrangement::addLineSegment (LineSegment *l)
-{
-	lineSegments.push_back(l);
-}
+  // Compute a random permutation p5, p6, . . . , pn of the remaining points.
+  int n = lineSegments.size();
+  int *p = new int [n];
+  randomPermutation (n, p);
 
-bool Arrangement::intersects (LineSegment *l)
-{
-	KdTree kdTree;
+  for (int i = 0; i < lineSegments.size(); ++i) {
+    kdTree.insert(lineSegments[i]);
+  }
 
-	// Compute a random permutation p5, p6, . . . , pn of the remaining points.
-	int n = lineSegments.size();
-	int *p = new int [n];
-	randomPermutation (n, p);
-
-	for (int i = 0; i < lineSegments.size(); ++i) {
-		kdTree.insert(lineSegments[i]);
-	}
-
-	kdTree.debug();
-
-	return kdTree.intersects(l);
+  return kdTree.intersects(&l);
 }
 
 void splitLineSegment (LineSegment *l, Point *splitAt, int splitType, LineSegment **l0, LineSegment **l1)

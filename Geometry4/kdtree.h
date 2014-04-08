@@ -16,6 +16,7 @@ using namespace acp;
 
 class LineSegment {
  public:
+  LineSegment () : p0(0), p1(0) {}
   LineSegment (Point *p0, Point *p1) : p0(p0), p1(p1) {}
   bool intersects (LineSegment *l);
 
@@ -51,15 +52,7 @@ class KdTree {
   KdTreeNode *root;
 };
 
-class Arrangement {
- public:
-  Arrangement () {}
-  ~Arrangement ();
-  void addLineSegment (LineSegment *l);
-  bool intersects (LineSegment *l);
-
-  LineSegments lineSegments;
-};
+bool intersects (LineSegments &lineSegments, LineSegment &l);
 
 void splitLineSegment (LineSegment *l, Point *splitAt, int splitType, LineSegment **l0, LineSegment **l1);
 

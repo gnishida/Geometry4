@@ -14,9 +14,8 @@ using namespace std;
 int main(int argc, char *argv[]) {
 	Parameter::enable();
 
-	Arrangement arr;
-
 	// read input data to build a kd tree
+	LineSegments lineSegments;
 	int numLineSegments;
 	cin >> numLineSegments;
 
@@ -29,7 +28,7 @@ int main(int argc, char *argv[]) {
 		cout << x1 << ", " << y1 << ", " << x2 << ", " << y2 << endl;
 
 		LineSegment *l = new LineSegment(new InputPoint(x1, y1), new InputPoint(x2, y2));
-		arr.addLineSegment(l);
+		lineSegments.push_back(l);
 	}
 
 	// test if the given line segment intersects with the other line segments
@@ -41,8 +40,8 @@ int main(int argc, char *argv[]) {
 
 		cout << "Test Line: " << x1 << ", " << y1 << ", " << x2 << ", " << y2 << endl;
 
-		LineSegment *l = new LineSegment(new InputPoint(x1, y1), new InputPoint(x2, y2));
-		if (arr.intersects(l)) {
+		LineSegment l(new InputPoint(x1, y1), new InputPoint(x2, y2));
+		if (intersects(lineSegments, l)) {
 			cout << "intersected" << endl;
 		} else {
 			cout << "not intersected" << endl;
