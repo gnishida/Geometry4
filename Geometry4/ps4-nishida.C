@@ -29,7 +29,6 @@ int main(int argc, char *argv[]) {
 			LineSegment *l = new LineSegment(new InputPoint(x1, y1), new InputPoint(x2, y2));
 
 			if (!naiveIntersects(lineSegments, *l)) {
-				//cout << x1 << " " << y1 << " " << x2 << " " << y2 << endl;
 				lineSegments.push_back(l);
 				++i;
 			}
@@ -37,11 +36,10 @@ int main(int argc, char *argv[]) {
 
 		KdTree kdTree1;
 		KdTree kdTree2;
+		KdTree kdTree3;
 		kdTree1.build(lineSegments);
-		kdTree2.naiveBuild(lineSegments);
-
-		//cout << "Depth (balanced) (n = " << n << ") : " << kdTree1.depth() << endl;
-		//cout << "Depth (naive)    (n = " << n << ") : " << kdTree2.depth() << endl;
+		kdTree2.medianBuild(lineSegments);
+		kdTree3.naiveBuild(lineSegments);
 
 		// generate 1000 test data
 		LineSegments tests;
@@ -64,17 +62,27 @@ int main(int argc, char *argv[]) {
 				kdTree1.intersects(tests[i]);
 			}
 			time_t end = clock();
-			cout << "Kd-Tree Elapsed time [ms] (n = " << n << ") : " << (double)(end-start)/CLOCKS_PER_SEC << " (Depth: " << kdTree1.depth() << ")" << endl;
+			cout << "best   Kd-Tree Elapsed time [ms] (n = " << n << ") : " << (double)(end-start)/CLOCKS_PER_SEC << " (Depth: " << kdTree1.depth() << ")" << endl;
 		}
 
-		// test by naive kdtree
+		// test by median kdtree
 		{
 			time_t start = clock();
 			for (int i = 0; i < tests.size(); ++i) {
 				kdTree2.intersects(tests[i]);
 			}
 			time_t end = clock();
-			cout << "naive Kd-Tree Elapsed time [ms] (n = " << n << ") : " << (double)(end-start)/CLOCKS_PER_SEC << " (Depth: " << kdTree2.depth() << ")" << endl;
+			cout << "median Kd-Tree Elapsed time [ms] (n = " << n << ") : " << (double)(end-start)/CLOCKS_PER_SEC << " (Depth: " << kdTree2.depth() << ")" << endl;
+		}
+
+		// test by naive kdtree
+		{
+			time_t start = clock();
+			for (int i = 0; i < tests.size(); ++i) {
+				kdTree3.intersects(tests[i]);
+			}
+			time_t end = clock();
+			cout << "naive  Kd-Tree Elapsed time [ms] (n = " << n << ") : " << (double)(end-start)/CLOCKS_PER_SEC << " (Depth: " << kdTree3.depth() << ")" << endl;
 		}
 
 		// test by N^2 approach
@@ -84,7 +92,7 @@ int main(int argc, char *argv[]) {
 				naiveIntersects(lineSegments, *tests[i]);
 			}
 			time_t end = clock();
-			cout << "N^2 approach Elapsed time [ms]: (n = " << n << ") :  " << (double)(end-start)/CLOCKS_PER_SEC << endl;
+			cout << "N^2 approach   Elapsed time [ms] (n = " << n << ") : " << (double)(end-start)/CLOCKS_PER_SEC << endl;
 		}
 	}
 

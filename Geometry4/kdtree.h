@@ -35,7 +35,6 @@ class KdTreeNode {
   void insertLeft (LineSegment *l);
   bool intersects (LineSegment *l);
   void debug (int level);
-  void build (LineSegments &lineSegments, LineSegments::iterator begin, LineSegments::iterator end);
   int depth ();
 
   int splitType;	// split by a plane that is perpendicular to X axis (0) or Y axis (1).
@@ -52,8 +51,11 @@ class KdTree {
   bool intersects (LineSegment *l);
   void debug ();
   void build (LineSegments &lineSegments);
+  void medianBuild (LineSegments &lineSegments);
   void naiveBuild (LineSegments &lineSegments);
-  void orderLineSegments (LineSegments &lineSegments, LineSegments::iterator begin, LineSegments::iterator end, int orderType, int depth, map<int, LineSegments> &orderedLineSegments);
+  void orderLineSegmentsByCost (LineSegments &lineSegments, LineSegments::iterator begin, LineSegments::iterator end, int orderType, int depth, map<int, LineSegments> &orderedLineSegments);
+  void orderLineSegmentsByMedian (LineSegments &lineSegments, LineSegments::iterator begin, LineSegments::iterator end, int orderType, int depth, map<int, LineSegments> &orderedLineSegments);
+  double computeCost (LineSegments &lineSegments, LineSegments::iterator begin, LineSegments::iterator end, Point* p, int splitType);
   int depth ();
 
   KdTreeNode *root;

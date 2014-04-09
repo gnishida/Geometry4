@@ -28,6 +28,7 @@ typedef vector<LineSegment *> LineSegments;
 
 class KdTreeNode {
  public:
+  KdTreeNode (int splitType) : lineSegment(0), splitType(splitType), splitAt(0), left(0), right(0) {}
   KdTreeNode (LineSegment *l, int splitType) : lineSegment(l), splitType(splitType), splitAt(l->p0), left(0), right(0) {}
   void insert (LineSegment *l);
   void insertRight (LineSegment *l);
@@ -50,9 +51,28 @@ class KdTree {
   bool intersects (LineSegment *l);
   void debug ();
   void build (LineSegments &lineSegments);
+  void medianBuild (LineSegments &lineSegments);
+  void naiveBuild (LineSegments &lineSegments);
+  void orderLineSegmentsByCost (LineSegments &lineSegments, LineSegments::iterator begin, LineSegments::iterator end, int orderType, int depth, map<int, LineSegments> &orderedLineSegments);
+  void orderLineSegmentsByMedian (LineSegments &lineSegments, LineSegments::iterator begin, LineSegments::iterator end, int orderType, int depth, map<int, LineSegments> &orderedLineSegments);
+  double computeCost (LineSegments &lineSegments, LineSegments::iterator begin, LineSegments::iterator end, Point* p, int splitType);
   int depth ();
 
   KdTreeNode *root;
+};
+
+class LineXOrder {
+ public:
+  bool operator() (LineSegment *l, LineSegment *m) const {
+    return l != m && XOrder(l->p0, m->p0) == 1;
+  }
+};
+
+class LineYOrder {
+ public:
+  bool operator() (LineSegment *l, LineSegment *m) const {
+    return l != m && YOrder(l->p0, m->p0) == 1;
+  }
 };
 
 bool naiveIntersects (LineSegments &lineSegments, LineSegment &l);

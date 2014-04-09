@@ -131,29 +131,6 @@ void KdTreeNode::debug (int level)
   }
 }
 
-void KdTreeNode::build (LineSegments &lineSegments, LineSegments::iterator begin, LineSegments::iterator end)
-{
-  // retrieve the median
-  if (splitType == 0) {
-    sort(begin, end, LineXOrder());
-  } else {
-    sort(begin, end, LineYOrder());
-  }
-
-  int mid = (end - begin) / 2;
-  lineSegment = lineSegments[mid];
-  splitAt = lineSegment->p0;
-
-  if (mid > 0) {
-    left = new KdTreeNode((splitType + 1) % 2);
-	left->build(lineSegments, begin, begin + mid);
-  }
-  if (begin + mid + 1 != end) {
-    right = new KdTreeNode((splitType + 1) % 2);
-	right->build(lineSegments, begin + mid + 1, end);
-  }
-}
-
 int KdTreeNode::depth ()
 {
   int leftDepth = 0;
@@ -188,7 +165,19 @@ void KdTree::debug ()
 void KdTree::build (LineSegments &lineSegments)
 {
   map<int, LineSegments> orderedLineSegments;
-  orderLineSegments(lineSegments, lineSegments.begin(), lineSegments.end(), 0, 0, orderedLineSegments);
+  orderLineSegmentsByCost(lineSegments, lineSegments.begin(), lineSegments.end(), 0, 0, orderedLineSegments);
+
+  for (map<int, LineSegments>::iterator it = orderedLineSegments.begin(); it != orderedLineSegments.end(); ++it) {
+	for (LineSegments::iterator l = it->second.begin(); l != it->second.end(); ++l) {
+	  insert(*l);
+	}
+  }
+}
+
+void KdTree::medianBuild (LineSegments &lineSegments)
+{
+  map<int, LineSegments> orderedLineSegments;
+  orderLineSegmentsByMedian(lineSegments, lineSegments.begin(), lineSegments.end(), 0, 0, orderedLineSegments);
 
   for (map<int, LineSegments>::iterator it = orderedLineSegments.begin(); it != orderedLineSegments.end(); ++it) {
 	for (LineSegments::iterator l = it->second.begin(); l != it->second.end(); ++l) {
@@ -209,7 +198,62 @@ void KdTree::naiveBuild (LineSegments &lineSegments)
   }
 }
 
-void KdTree::orderLineSegments (LineSegments &lineSegments, LineSegments::iterator begin, LineSegments::iterator end, int orderType, int depth, map<int, LineSegments> &orderedLineSegments)
+void KdTree::orderLineSegmentsByCost (LineSegments &lineSegments, LineSegments::iterator begin, LineSegments::iterator end, int orderType, int depth, map<int, LineSegments> &orderedLineSegments)
+{
+  double min_c = std::numeric_limits<double>::max();
+  int mid;
+  int i = 0;
+  for (LineSegments::iterator it = begin; it != end; ++it, ++i) {
+	double c = computeCost(lineSegments, begin, end, (*it)->p0, orderType);
+	if (c < min_c) {
+      mid = i;
+	}
+	c = computeCost(lineSegments, begin, end, (*it)->p1, orderType);
+	if (c < min_c) {
+      mid = i;
+	}
+  }
+
+  // separate the line segments such that the first half is for the left sub-tree and the second half is for the right sub-tree
+  LineSegment *mid_l = *(begin + mid);
+  {
+    swap(*(end - 1), *(begin + mid));
+	LineSegments::iterator it = begin;
+	LineSegments::iterator r_index = end - 2;
+	for (; it != end - 1 && it <= r_index;) {
+      if (orderType == 0) {
+        if (XOrder((*it)->p0, mid_l->p0) == 1) {
+		  it++;
+		} else {
+          swap(*it, *r_index);
+		  r_index--;
+		}
+	  } else {
+        if (YOrder((*it)->p0, mid_l->p0) == 1) {
+		  it++;
+		} else {
+          swap(*it, *r_index);
+		  r_index--;
+		}
+	  }
+	}
+
+    swap(*it, *(end - 1));
+
+	mid = it - begin;
+  }
+
+  orderedLineSegments[depth].push_back(mid_l);
+
+  if (mid > 0) {
+    orderLineSegmentsByCost(lineSegments, begin, begin + mid, 1 - orderType, depth + 1, orderedLineSegments);
+  }
+  if (begin + mid + 1 != end) {
+    orderLineSegmentsByCost(lineSegments, begin + mid + 1, end, 1 - orderType, depth + 1, orderedLineSegments);
+  }
+}
+
+void KdTree::orderLineSegmentsByMedian (LineSegments &lineSegments, LineSegments::iterator begin, LineSegments::iterator end, int orderType, int depth, map<int, LineSegments> &orderedLineSegments)
 {
   if (orderType == 0) {
     sort(begin, end, LineXOrder());
@@ -222,11 +266,101 @@ void KdTree::orderLineSegments (LineSegments &lineSegments, LineSegments::iterat
   orderedLineSegments[depth].push_back(*(begin + mid));
 
   if (mid > 0) {
-    orderLineSegments(lineSegments, begin, begin + mid, 1 - orderType, depth + 1, orderedLineSegments);
+    orderLineSegmentsByMedian(lineSegments, begin, begin + mid, 1 - orderType, depth + 1, orderedLineSegments);
   }
   if (begin + mid + 1 != end) {
-    orderLineSegments(lineSegments, begin + mid + 1, end, 1 - orderType, depth + 1, orderedLineSegments);
+    orderLineSegmentsByMedian(lineSegments, begin + mid + 1, end, 1 - orderType, depth + 1, orderedLineSegments);
   }
+}
+
+double KdTree::computeCost (LineSegments &lineSegments, LineSegments::iterator begin, LineSegments::iterator end, Point* p, int splitType)
+{
+  int TL = 0;
+  int TR = 0;
+  Parameter PL, PR;
+
+  Parameter min_p(std::numeric_limits<double>::max());
+  Parameter max_p(-std::numeric_limits<double>::max());
+
+  if (splitType == 0) {
+    for (LineSegments::iterator it = begin; it != end; ++it) {
+      if ((*it)->p0 != p && (*it)->p1 != p && XOrder((*it)->p0, p) == 0 && XOrder((*it)->p1, p) == 0) {
+        TL++;
+		if ((*it)->p0->getP().getX() < min_p) {
+			min_p = (*it)->p0->getP().getX();
+		}
+		if ((*it)->p1->getP().getX() < min_p) {
+			min_p = (*it)->p1->getP().getX();
+		}
+	  } else if ((*it)->p0 != p && (*it)->p1 != p && XOrder(p, (*it)->p0) == 0 && XOrder(p, (*it)->p1) == 0) {
+	    TR++;
+		if ((*it)->p0->getP().getX() > max_p) {
+			max_p = (*it)->p0->getP().getX();
+		}
+		if ((*it)->p1->getP().getX() > max_p) {
+			max_p = (*it)->p1->getP().getX();
+		}
+	  } else {
+	    TL++;
+		TR++;
+		if ((*it)->p0->getP().getX() < min_p) {
+			min_p = (*it)->p0->getP().getX();
+		}
+		if ((*it)->p1->getP().getX() < min_p) {
+			min_p = (*it)->p1->getP().getX();
+		}
+		if ((*it)->p0->getP().getX() > max_p) {
+			max_p = (*it)->p0->getP().getX();
+		}
+		if ((*it)->p1->getP().getX() > max_p) {
+			max_p = (*it)->p1->getP().getX();
+		}
+  	  }
+    }
+
+	PL = (p->getP().getX() - min_p) / (max_p - min_p);
+	PR = (max_p - p->getP().getX()) / (max_p - min_p);
+  } else {
+    for (LineSegments::iterator it = begin; it != end; ++it) {
+      if ((*it)->p0 != p && (*it)->p1 != p && YOrder((*it)->p0, p) == 0 && YOrder((*it)->p1, p) == 0) {
+        TL++;
+		if ((*it)->p0->getP().getY() < min_p) {
+			min_p = (*it)->p0->getP().getY();
+		}
+		if ((*it)->p1->getP().getY() < min_p) {
+			min_p = (*it)->p1->getP().getY();
+		}
+	  } else if ((*it)->p0 != p && (*it)->p1 != p && YOrder(p, (*it)->p0) == 0 && YOrder(p, (*it)->p1) == 0) {
+	    TR++;
+		if ((*it)->p0->getP().getY() > max_p) {
+			max_p = (*it)->p0->getP().getY();
+		}
+		if ((*it)->p1->getP().getY() > max_p) {
+			max_p = (*it)->p1->getP().getY();
+		}
+	  } else {
+	    TL++;
+		TR++;
+		if ((*it)->p0->getP().getY() < min_p) {
+			min_p = (*it)->p0->getP().getY();
+		}
+		if ((*it)->p1->getP().getY() < min_p) {
+			min_p = (*it)->p1->getP().getY();
+		}
+		if ((*it)->p0->getP().getY() > max_p) {
+			max_p = (*it)->p0->getP().getY();
+		}
+		if ((*it)->p1->getP().getY() > max_p) {
+			max_p = (*it)->p1->getP().getY();
+		}
+  	  }
+    }
+
+	PL = (p->getP().getY() - min_p) / (max_p - min_p);
+	PR = (max_p - p->getP().getY()) / (max_p - min_p);
+  }
+
+  return log((double)TL) * PL.mid() + log((double)TR) * PR.mid();
 }
 
 int KdTree::depth ()
