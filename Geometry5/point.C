@@ -27,6 +27,20 @@ PV2 lineIntersection (const PV2 &a, const PV2 &b, const PV2 &c, const PV2 &d)
   return a + k*u;
 }
 
+PV2 lineIntersectionWithXAxis (const PV2 &a, const PV2 &b, const PV2 &c)
+{
+  PV2 u = b - a;
+  Parameter k = (b.getY() - a.getY()) / (c.getY() - a.getY());
+  return a + k*u;
+}
+
+PV2 lineIntersectionWithYAxis (const PV2 &a, const PV2 &b, const PV2 &c)
+{
+  PV2 u = b - a;
+  Parameter k = (b.getX() - a.getX()) / (c.getX() - a.getX());
+  return a + k*u;
+}
+
 void pp (Point *p)
 {
   PV2 pp = p->getP();

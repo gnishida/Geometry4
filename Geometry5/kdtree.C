@@ -129,7 +129,17 @@ void KdTreeNode::debug (int level)
     cout << "Right:" << endl;
 	right->debug(level + 3);
   }
+}
 
+int KdTreeNode::depth ()
+{
+  int leftDepth = 0;
+  if (left != 0) leftDepth = left->depth();
+
+  int rightDepth = 0;
+  if (right != 0) rightDepth = right->depth();
+
+  return (leftDepth > rightDepth) ? leftDepth + 1 : rightDepth + 1;
 }
 
 void KdTree::insert (LineSegment *l)
@@ -164,6 +174,12 @@ void KdTree::build (LineSegments &lineSegments)
   }
 }
 
+int KdTree::depth ()
+{
+  if (root == 0) return 0;
+  else return root->depth();
+}
+
 bool naiveIntersects (LineSegments &lineSegments, LineSegment &l)
 {
   for (LineSegments::iterator it = lineSegments.begin(); it != lineSegments.end(); ++it) {
@@ -176,26 +192,24 @@ bool naiveIntersects (LineSegments &lineSegments, LineSegment &l)
 void splitLineSegment (LineSegment *l, Point *splitAt, int splitType, LineSegment **l0, LineSegment **l1)
 {
   if (splitType == 0) {
-    PV2 p = splitAt->getP() + PV2(0, 10);
-    PV2 intP = lineIntersection(l->p0->getP(), l->p1->getP(), splitAt->getP(), p);
+	Point *p = new LineIntersectionWithYAxis(l->p0, l->p1, splitAt);
 
-	if (XOrder(l->p0, splitAt) == 1) {
-	  *l0 = new LineSegment(l->p0, new InputPoint(intP));
-	  *l1 = new LineSegment(l->p1, new InputPoint(intP));
+	if (l->p0 != splitAt && XOrder(l->p0, splitAt) == 1) {
+	  *l0 = new LineSegment(l->p0, p);
+	  *l1 = new LineSegment(l->p1, p);
 	} else {
-	  *l0 = new LineSegment(l->p1, new InputPoint(intP));
-	  *l1 = new LineSegment(l->p0, new InputPoint(intP));
+	  *l0 = new LineSegment(l->p1, p);
+	  *l1 = new LineSegment(l->p0, p);
 	}
   } else {
-    PV2 p = splitAt->getP() + PV2(10, 0);
-    PV2 intP = lineIntersection(l->p0->getP(), l->p1->getP(), splitAt->getP(), p);
+    Point *p = new LineIntersectionWithXAxis(l->p0, l->p1, splitAt);
 
-    if (YOrder(l->p0, splitAt) == 1) {
-	  *l0 = new LineSegment(l->p0, new InputPoint(intP));
-	  *l1 = new LineSegment(l->p1, new InputPoint(intP));
+    if (l->p0 != splitAt && YOrder(l->p0, splitAt) == 1) {
+	  *l0 = new LineSegment(l->p0, p);
+	  *l1 = new LineSegment(l->p1, p);
 	} else {
-	  *l0 = new LineSegment(l->p1, new InputPoint(intP));
-	  *l1 = new LineSegment(l->p0, new InputPoint(intP));
+	  *l0 = new LineSegment(l->p1, p);
+	  *l1 = new LineSegment(l->p0, p);
 	}
   }
 }

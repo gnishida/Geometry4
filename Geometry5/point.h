@@ -76,6 +76,38 @@ class LineIntersection : public Point {
   LineIntersection * copy () const { return new LineIntersection(a, b, c, d); }
 };
 
+PV2 lineIntersectionWithXAxis (const PV2 &a, const PV2 &b, const PV2 &c);
+
+class LineIntersectionWithXAxis : public Point {
+ private:
+  Objects getObjects () { return Objects(a, b, c); }
+  void calculate () { 
+    p = lineIntersectionWithXAxis(a->getP(), b->getP(), c->getP());
+  }
+ protected:
+  Point *a, *b, *c;
+ public:
+  LineIntersectionWithXAxis (Point *a, Point *b, Point *c) 
+    : a(a), b(b), c(c) { calculate(); }
+  LineIntersectionWithXAxis * copy () const { return new LineIntersectionWithXAxis(a, b, c); }
+};
+
+PV2 lineIntersectionWithYAxis (const PV2 &a, const PV2 &b, const PV2 &c);
+
+class LineIntersectionWithYAxis : public Point {
+ private:
+  Objects getObjects () { return Objects(a, b, c); }
+  void calculate () { 
+    p = lineIntersectionWithYAxis(a->getP(), b->getP(), c->getP());
+  }
+ protected:
+  Point *a, *b, *c;
+ public:
+  LineIntersectionWithYAxis (Point *a, Point *b, Point *c) 
+    : a(a), b(b), c(c) { calculate(); }
+  LineIntersectionWithYAxis * copy () const { return new LineIntersectionWithYAxis(a, b, c); }
+};
+
 void pp (Point *p);
 
 #endif

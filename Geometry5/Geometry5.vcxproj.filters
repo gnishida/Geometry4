@@ -13,5 +13,60 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Source Files\qd">
+      <UniqueIdentifier>{0e5d9d54-0d63-4198-be07-aaba56ddfc25}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="acp.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="interplot.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="kdtree.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="permute.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="plot.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="point.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ps4-nishida.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="acp.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="kdtree.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="object.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="permute.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="plot.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="point.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pv.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="qd\qd_config.h">
+      <Filter>Source Files\qd</Filter>
+    </ClInclude>
+    <ClInclude Include="qd\qd_inline.h">
+      <Filter>Source Files\qd</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

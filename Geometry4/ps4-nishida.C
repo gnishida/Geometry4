@@ -14,8 +14,8 @@ using namespace std;
  */
 int main(int argc, char *argv[]) {
 	Parameter::enable();
-
-	for (int n = 100; n < 1000; n+=100) {
+		
+	for (int n = 1000; n <= 10000; n+=1000) {
 		// read input data to build a kd tree
 		LineSegments lineSegments;
 
@@ -35,8 +35,13 @@ int main(int argc, char *argv[]) {
 			}
 		}
 
-		KdTree kdTree;
-		kdTree.build(lineSegments);
+		KdTree kdTree1;
+		KdTree kdTree2;
+		kdTree1.build(lineSegments);
+		kdTree2.naiveBuild(lineSegments);
+
+		//cout << "Depth (balanced) (n = " << n << ") : " << kdTree1.depth() << endl;
+		//cout << "Depth (naive)    (n = " << n << ") : " << kdTree2.depth() << endl;
 
 		// generate 1000 test data
 		LineSegments tests;
@@ -52,32 +57,34 @@ int main(int argc, char *argv[]) {
 			tests.push_back(l);
 		}
 
-		// test if the given line segment intersects with the other line segments
+		// test by kdtree
 		{
 			time_t start = clock();
 			for (int i = 0; i < tests.size(); ++i) {
-				kdTree.intersects(tests[i]);
+				kdTree1.intersects(tests[i]);
 			}
 			time_t end = clock();
-			cout << "Kd-Tree Elapsed time [ms] (n = " << n << ") : " << (double)(end-start)/CLOCKS_PER_SEC << endl;
+			cout << "Kd-Tree Elapsed time [ms] (n = " << n << ") : " << (double)(end-start)/CLOCKS_PER_SEC << " (Depth: " << kdTree1.depth() << ")" << endl;
 		}
 
+		// test by naive kdtree
+		{
+			time_t start = clock();
+			for (int i = 0; i < tests.size(); ++i) {
+				kdTree2.intersects(tests[i]);
+			}
+			time_t end = clock();
+			cout << "naive Kd-Tree Elapsed time [ms] (n = " << n << ") : " << (double)(end-start)/CLOCKS_PER_SEC << " (Depth: " << kdTree2.depth() << ")" << endl;
+		}
+
+		// test by N^2 approach
 		{
 			time_t start = clock();
 			for (int i = 0; i < tests.size(); ++i) {
 				naiveIntersects(lineSegments, *tests[i]);
 			}
 			time_t end = clock();
-			cout << "Naive Elapsed time [ms]: (n = " << n << ") :  " << (double)(end-start)/CLOCKS_PER_SEC << endl;
-		}
-
-		// check the correctness of the result of the Kd-tree version against the naive approach
-		{
-			for (int i = 0; i < tests.size(); ++i) {
-				if (kdTree.intersects(tests[i]) != naiveIntersects(lineSegments, *tests[i])) {
-					cout << "Incorrect result was found!!!" << endl;
-				}
-			}
+			cout << "N^2 approach Elapsed time [ms]: (n = " << n << ") :  " << (double)(end-start)/CLOCKS_PER_SEC << endl;
 		}
 	}
 

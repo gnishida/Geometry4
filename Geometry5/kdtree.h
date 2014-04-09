@@ -34,6 +34,7 @@ class KdTreeNode {
   void insertLeft (LineSegment *l);
   bool intersects (LineSegment *l);
   void debug (int level);
+  int depth ();
 
   int splitType;	// split by a plane that is perpendicular to X axis (0) or Y axis (1).
   Point *splitAt;
@@ -49,6 +50,7 @@ class KdTree {
   bool intersects (LineSegment *l);
   void debug ();
   void build (LineSegments &lineSegments);
+  int depth ();
 
   KdTreeNode *root;
 };

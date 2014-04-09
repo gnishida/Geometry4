@@ -30,6 +30,9 @@
     <ClCompile Include="ps4-nishida.C">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="permute.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="acp.h">
@@ -51,6 +54,9 @@
       <Filter>Header Files\qd</Filter>
     </ClInclude>
     <ClInclude Include="kdtree.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="permute.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

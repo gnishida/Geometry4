@@ -70,18 +70,6 @@ int main(int argc, char *argv[]) {
 			time_t end = clock();
 			cout << "Naive Elapsed time [ms]: (n = " << n << ") :  " << (double)(end-start)/CLOCKS_PER_SEC << endl;
 		}
-
-		// check the correctness of the result of the Kd-tree version against the naive approach
-		{
-			for (int i = 0; i < tests.size(); ++i) {
-				if (kdTree.intersects(tests[i]) != naiveIntersects(lineSegments, *tests[i])) {
-					cout << "Incorrect result was found!!! i = " << i << " n = " << n << endl;
-					pl(tests[i]);
-					cout << "Kd Tree: " << kdTree.intersects(tests[i]) << endl;
-					cout << "Naive  : " << naiveIntersects(lineSegments, *tests[i]) << endl;
-				}
-			}
-		}
 	}
 
 	return 0;

@@ -62,6 +62,7 @@
   <ItemGroup>
     <ClCompile Include="acp.cc" />
     <ClCompile Include="kdtree.C" />
+    <ClCompile Include="permute.C" />
     <ClCompile Include="point.C" />
     <ClCompile Include="ps4-nishida.C" />
   </ItemGroup>
@@ -69,6 +70,7 @@
     <ClInclude Include="acp.h" />
     <ClInclude Include="kdtree.h" />
     <ClInclude Include="object.h" />
+    <ClInclude Include="permute.h" />
     <ClInclude Include="point.h" />
     <ClInclude Include="pv.h" />
     <ClInclude Include="qd\qd_config.h" />
