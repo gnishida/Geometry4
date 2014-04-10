@@ -167,6 +167,10 @@ void KdTree::build (LineSegments &lineSegments)
   map<int, LineSegments> orderedLineSegments;
   orderLineSegmentsByCost(lineSegments, lineSegments.begin(), lineSegments.end(), 0, 0, orderedLineSegments);
 
+  for (LineSegments::iterator it = lineSegments.begin(); it != lineSegments.end(); ++it) {
+    //pl(*it);
+  }
+
   for (map<int, LineSegments>::iterator it = orderedLineSegments.begin(); it != orderedLineSegments.end(); ++it) {
 	for (LineSegments::iterator l = it->second.begin(); l != it->second.end(); ++l) {
 	  insert(*l);
@@ -206,12 +210,15 @@ void KdTree::orderLineSegmentsByCost (LineSegments &lineSegments, LineSegments::
   for (LineSegments::iterator it = begin; it != end; ++it, ++i) {
 	double c = computeCost(lineSegments, begin, end, (*it)->p0, orderType);
 	if (c < min_c) {
+	  min_c = c;
       mid = i;
 	}
+	/*
 	c = computeCost(lineSegments, begin, end, (*it)->p1, orderType);
 	if (c < min_c) {
       mid = i;
 	}
+	*/
   }
 
   // separate the line segments such that the first half is for the left sub-tree and the second half is for the right sub-tree
@@ -279,12 +286,13 @@ double KdTree::computeCost (LineSegments &lineSegments, LineSegments::iterator b
   int TR = 0;
   Parameter PL, PR;
 
-  Parameter min_p(std::numeric_limits<double>::max());
-  Parameter max_p(-std::numeric_limits<double>::max());
+  Parameter min_p((double)999999);
+  Parameter max_p((double)-999999);
 
   if (splitType == 0) {
     for (LineSegments::iterator it = begin; it != end; ++it) {
-      if ((*it)->p0 != p && (*it)->p1 != p && XOrder((*it)->p0, p) == 0 && XOrder((*it)->p1, p) == 0) {
+	  //pl(*it);
+      if ((*it)->p0 != p && (*it)->p1 != p && XOrder((*it)->p0, p) == 1 && XOrder((*it)->p1, p) == 1) {
         TL++;
 		if ((*it)->p0->getP().getX() < min_p) {
 			min_p = (*it)->p0->getP().getX();
@@ -292,7 +300,7 @@ double KdTree::computeCost (LineSegments &lineSegments, LineSegments::iterator b
 		if ((*it)->p1->getP().getX() < min_p) {
 			min_p = (*it)->p1->getP().getX();
 		}
-	  } else if ((*it)->p0 != p && (*it)->p1 != p && XOrder(p, (*it)->p0) == 0 && XOrder(p, (*it)->p1) == 0) {
+	  } else if ((*it)->p0 != p && (*it)->p1 != p && XOrder(p, (*it)->p0) == 1 && XOrder(p, (*it)->p1) == 1) {
 	    TR++;
 		if ((*it)->p0->getP().getX() > max_p) {
 			max_p = (*it)->p0->getP().getX();
@@ -322,7 +330,7 @@ double KdTree::computeCost (LineSegments &lineSegments, LineSegments::iterator b
 	PR = (max_p - p->getP().getX()) / (max_p - min_p);
   } else {
     for (LineSegments::iterator it = begin; it != end; ++it) {
-      if ((*it)->p0 != p && (*it)->p1 != p && YOrder((*it)->p0, p) == 0 && YOrder((*it)->p1, p) == 0) {
+      if ((*it)->p0 != p && (*it)->p1 != p && YOrder((*it)->p0, p) == 1 && YOrder((*it)->p1, p) == 1) {
         TL++;
 		if ((*it)->p0->getP().getY() < min_p) {
 			min_p = (*it)->p0->getP().getY();
@@ -330,7 +338,7 @@ double KdTree::computeCost (LineSegments &lineSegments, LineSegments::iterator b
 		if ((*it)->p1->getP().getY() < min_p) {
 			min_p = (*it)->p1->getP().getY();
 		}
-	  } else if ((*it)->p0 != p && (*it)->p1 != p && YOrder(p, (*it)->p0) == 0 && YOrder(p, (*it)->p1) == 0) {
+	  } else if ((*it)->p0 != p && (*it)->p1 != p && YOrder(p, (*it)->p0) == 1 && YOrder(p, (*it)->p1) == 1) {
 	    TR++;
 		if ((*it)->p0->getP().getY() > max_p) {
 			max_p = (*it)->p0->getP().getY();
