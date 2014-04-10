@@ -209,7 +209,6 @@ void KdTree::orderLineSegmentsByCost (LineSegments &lineSegments, LineSegments::
   int i = 0;
   for (LineSegments::iterator it = begin; it != end; ++it, ++i) {
 	double c = computeCost(lineSegments, begin, end, (*it)->p0, orderType);
-	//cout << "cost: " << c << endl;
 	if (c < min_c) {
 	  min_c = c;
       mid = i;
@@ -224,8 +223,6 @@ void KdTree::orderLineSegmentsByCost (LineSegments &lineSegments, LineSegments::
 
   // separate the line segments such that the first half is for the left sub-tree and the second half is for the right sub-tree
   LineSegment *mid_l = *(begin + mid);
-  //cout << "Mid (" << mid << "): " << endl;
-  //pl(mid_l);
   {
     swap(*(end - 1), *(begin + mid));
 	LineSegments::iterator it = begin;
@@ -251,11 +248,6 @@ void KdTree::orderLineSegmentsByCost (LineSegments &lineSegments, LineSegments::
     swap(*it, *(end - 1));
 
 	mid = it - begin;
-  }
-
-  //cout << "==============================" << endl;
-  for (LineSegments::iterator it = begin; it != end; ++it) {
-    //pl(*it);
   }
 
   orderedLineSegments[depth].push_back(mid_l);
@@ -332,7 +324,6 @@ double KdTree::computeCost (LineSegments &lineSegments, LineSegments::iterator b
 			max_p = (*it)->p1->getP().getX();
 		}
   	  }
-      //cout << "TL: " << TL << ", TR: " << TR << ", min_p: " << min_p.mid() << ", max_p: " << max_p.mid() << endl;
     }
 
 	PL = (p->getP().getX() - min_p) / (max_p - min_p);
